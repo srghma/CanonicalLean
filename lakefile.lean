@@ -13,14 +13,14 @@ def buildArchive :=
 
 package Canonical where
   preferReleaseBuild := true
-  buildArchive := buildArchive ++ ".tar.gz"
+  buildArchive := do
+    dbg_trace (buildArchive ++ ".tar.gz")
+    buildArchive ++ ".tar.gz"
 
 target canonical pkg : Dynlib := do
   let libPath := pkg.sharedLibDir / nameToSharedLib "canonical_lean"
   let lib := { path := libPath, name := "canonical_lean" }
-  if !(← libPath.pathExists) then
-    (← pkg.gitHubRelease.fetch).mapM (fun _ => do pure lib)
-  else return Job.pure lib
+  return Job.pure lib
 
 @[default_target]
 lean_lib Canonical where
